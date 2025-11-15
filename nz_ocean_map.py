@@ -191,8 +191,8 @@ def create_legend_image(colors, labels, target_height, bar_width=60, data_type='
 
     # Load font (larger for better readability)
     try:
-        font_large = ImageFont.truetype("PressStart2P.ttf", 24)
-        font_title = ImageFont.truetype("PressStart2P.ttf", 18)
+        font_large = ImageFont.truetype("font/PressStart2P.ttf", 24)
+        font_title = ImageFont.truetype("font/PressStart2P.ttf", 18)
     except:
         font_large = ImageFont.load_default()
         font_title = ImageFont.load_default()
@@ -408,8 +408,8 @@ def add_title(image, title, time_str):
     # Draw title
     draw = ImageDraw.Draw(new_image)
     try:
-        font = ImageFont.truetype("PressStart2P.ttf", 24)
-        font_small = ImageFont.truetype("PressStart2P.ttf", 14)
+        font = ImageFont.truetype("font/PressStart2P.ttf", 24)
+        font_small = ImageFont.truetype("font/PressStart2P.ttf", 14)
     except:
         font = ImageFont.load_default()
         font_small = font
