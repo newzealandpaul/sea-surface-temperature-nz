@@ -49,3 +49,7 @@ Python 3.12+ with UV package manager
 uv sync
 uv run nz_ocean_map.py
 ```
+
+## License
+
+Creative Commons Attribution License (CC BY 4.0)
