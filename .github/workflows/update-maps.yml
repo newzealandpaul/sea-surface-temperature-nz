@@ -30,6 +30,13 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Configure git and sync with remote
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git fetch origin main
+          git reset --hard origin/main
+
       - name: Set timestamp variables
         run: |
           echo "DATE=$(date -u '+%Y-%m-%d')" >> $GITHUB_ENV
@@ -64,9 +71,6 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git pull origin main --rebase
           git add latest/*.png archive/
           git diff --staged --quiet || git commit -m "Update ocean maps - ${{ env.DATE }} ${{ env.TIME }} UTC"
-          git push
+          git push origin main
