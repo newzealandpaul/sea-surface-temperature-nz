@@ -1,0 +1,65 @@
+name: Update Ocean Maps
+
+on:
+  schedule:
+    # Run every 6 hours at 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  generate-maps:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set timestamp variables
+        run: |
+          echo "DATE=$(date -u '+%Y-%m-%d')" >> $GITHUB_ENV
+          echo "TIME=$(date -u '+%H%M')" >> $GITHUB_ENV
+
+      - name: Create directories
+        run: |
+          mkdir -p latest
+          mkdir -p archive/${{ env.DATE }}
+
+      - name: Generate temperature map (today)
+        run: |
+          uv run nz_ocean_map.py \
+            --type temperature \
+            --output latest/temperature.png
+          cp latest/temperature.png archive/${{ env.DATE }}/temperature-${{ env.TIME }}.png
+
+      - name: Generate temperature forecast (tomorrow)
+        run: |
+          uv run nz_ocean_map.py \
+            --type temperature \
+            --days 1 \
+            --output latest/temperature_tomorrow.png
+          cp latest/temperature_tomorrow.png archive/${{ env.DATE }}/temperature_tomorrow-${{ env.TIME }}.png
+
+      - name: Generate anomaly map
+        run: |
+          uv run nz_ocean_map.py \
+            --type anomaly \
+            --output latest/anomaly.png
+          cp latest/anomaly.png archive/${{ env.DATE }}/anomaly-${{ env.TIME }}.png
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add latest/*.png archive/
+          git diff --staged --quiet || git commit -m "Update ocean maps - ${{ env.DATE }} ${{ env.TIME }} UTC"
+          git push
