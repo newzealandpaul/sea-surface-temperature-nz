@@ -1,5 +1,7 @@
 # New Zealand Sea Surface Temperature Maps
 
+![Image of New Zealand showing sea temperature anomaly](https://github.com/newzealandpaul/sea-surface-temperature-nz/blob/main/latest/anomaly.png?raw=true)
+
 Automated ocean data visualization for New Zealand waters using Copernicus Marine Service WMTS.
 
 ## Automated Updates
