@@ -71,6 +71,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          git pull
           git add latest/*.png archive/
           git diff --staged --quiet || git commit -m "Update ocean maps - ${{ env.DATE }} ${{ env.TIME }} UTC"
           git push --force-with-lease origin main
