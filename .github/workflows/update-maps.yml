@@ -73,6 +73,21 @@ jobs:
             --output latest/anomaly.png
           cp latest/anomaly.png archive/${{ env.DATE }}/anomaly-${{ env.TIME }}.png
 
+      - name: Configure AWS CLI for R2
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.R2_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          aws configure set region auto
+
+      - name: Upload to Cloudflare R2
+        run: |
+          aws s3 sync latest/ s3://${{ secrets.R2_BUCKET_NAME }}/latest/ \
+            --endpoint-url https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com \
+            --no-progress
+          aws s3 sync archive/${{ env.DATE }}/ s3://${{ secrets.R2_BUCKET_NAME }}/archive/${{ env.DATE }}/ \
+            --endpoint-url https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com \
+            --no-progress
+
       - name: Commit and push changes
         run: |
           git add latest/*.png archive/
