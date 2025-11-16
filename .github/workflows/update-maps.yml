@@ -74,6 +74,10 @@ jobs:
             --output latest/anomaly.png
           cp latest/anomaly.png archive/${{ env.DATE }}/anomaly-${{ env.TIME }}.png
 
+      - name: Remove .gitkeep files before upload
+        run: |
+          find latest/ archive/ -name '.gitkeep' -delete 2>/dev/null || true
+
       - name: Configure AWS CLI for R2
         run: |
           aws configure set aws_access_key_id ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -85,12 +89,10 @@ jobs:
           aws s3 sync latest/ s3://${{ secrets.R2_BUCKET_NAME }}/latest/ \
             --endpoint-url https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com \
             --exclude "*" --include "*.png" --include "*.csv" --include "*.parquet" \
-            --delete \
             --no-progress
           aws s3 sync archive/${{ env.DATE }}/ s3://${{ secrets.R2_BUCKET_NAME }}/archive/${{ env.DATE }}/ \
             --endpoint-url https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com \
             --exclude "*" --include "*.png" --include "*.csv" --include "*.parquet" \
-            --delete \
             --no-progress
 
       - name: Commit and push changes
