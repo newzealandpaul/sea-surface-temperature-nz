@@ -85,10 +85,12 @@ jobs:
           aws s3 sync latest/ s3://${{ secrets.R2_BUCKET_NAME }}/latest/ \
             --endpoint-url https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com \
             --exclude "*" --include "*.png" --include "*.csv" --include "*.parquet" \
+            --delete \
             --no-progress
           aws s3 sync archive/${{ env.DATE }}/ s3://${{ secrets.R2_BUCKET_NAME }}/archive/${{ env.DATE }}/ \
             --endpoint-url https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com \
             --exclude "*" --include "*.png" --include "*.csv" --include "*.parquet" \
+            --delete \
             --no-progress
 
       - name: Commit and push changes
