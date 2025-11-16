@@ -93,6 +93,6 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add latest/*.png archive/
+          git add latest/*.png archive/**/*.png
           git diff --staged --quiet || git commit -m "Update ocean maps - ${{ env.DATE }} ${{ env.TIME }} ${{ env.TIMEZONE }}"
           git push --force origin main
