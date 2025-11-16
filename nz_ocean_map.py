@@ -420,7 +420,7 @@ def add_title(image, title, time_str):
     
     return new_image
 
-def create_map(data_type='temperature', output_file=None, zoom_level=6, days_offset=0, with_legend=True, with_title=True):
+def create_map(data_type='temperature', output_file=None, zoom_level=6, days_offset=0, with_legend=True, with_title=True, timestamp_file=None):
     """
     Create a map of New Zealand ocean data
 
@@ -457,7 +457,14 @@ def create_map(data_type='temperature', output_file=None, zoom_level=6, days_off
     # Get time parameter (returns UTC for API and NZ time for display)
     time_param, time_nz = get_time_param(days_offset)
     time_display = time_nz.strftime('%Y-%m-%d %H:%M NZDT' if time_nz.dst() else '%Y-%m-%d %H:%M NZST')
-    
+
+    # Write timestamp to file if requested
+    if timestamp_file:
+        with open(timestamp_file, 'w') as f:
+            f.write(f"DATE={time_nz.strftime('%Y-%m-%d')}\n")
+            f.write(f"TIME={time_nz.strftime('%H%M')}\n")
+            f.write(f"TIMEZONE={time_nz.strftime('%Z')}\n")
+
     rows = coverage['row_end'] - coverage['row_start'] + 1
     cols = coverage['col_end'] - coverage['col_start'] + 1
     total_tiles = rows * cols
@@ -580,6 +587,8 @@ Color scales are automatically extracted from WMTS and embedded in the output im
                         help='Exclude color scale from output (included by default)')
     parser.add_argument('--no-title', action='store_true',
                         help='Exclude title banner from output (included by default)')
+    parser.add_argument('--write-timestamp',
+                        help='Write data timestamp to file (format: YYYY-MM-DD HH:MM)')
 
     args = parser.parse_args()
 
@@ -590,7 +599,8 @@ Color scales are automatically extracted from WMTS and embedded in the output im
             zoom_level=args.zoom,
             days_offset=args.days,
             with_legend=not args.no_legend,
-            with_title=not args.no_title
+            with_title=not args.no_title,
+            timestamp_file=args.write_timestamp
         )
         sys.exit(0 if success else 1)
     except KeyboardInterrupt:
